@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essay Scoring</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #2e2e1f;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #00f7ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="display-4 text-center">
+            <i class="fa fa-book" aria-hidden="true"></i>
+            Essay Scoring System
+        </h1>
+        <form id="essayForm" class="form-group">
+            <textarea name="essay" rows="10" cols="50" class="form-control" placeholder="Enter your essay here..."></textarea><br>
+            <input type="submit" value="Submit" class="btn btn-primary">
+        </form>
+        <div id="result" class="alert alert-secondary" role="alert"></div>
+        <div id="explanation" class="alert alert-info" role="alert"></div>
+    </div>
+
+    <script>
+        document.getElementById('essayForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var formData = new FormData(this);
+            fetch('/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').innerText = 'Error: ' + data.error;
+                    document.getElementById('result').classList.add('alert-danger');
+                    document.getElementById('explanation').innerText = '';
+                } else {
+                    document.getElementById('result').innerText = 'Score: ' + data.score;
+                    document.getElementById('result').classList.add('alert-success');
+                    document.getElementById('explanation').innerText = data.explanation.join('\n');
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = 'An error occurred: ' + error;
+                document.getElementById('result').classList.add('alert-danger');
+                document.getElementById('explanation').innerText = '';
+            });
+        });
+    </script>
+</body>
+</html>
